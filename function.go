@@ -39,6 +39,20 @@ type Payload struct {
 	TargetVersion      string `json:"targetVersion"`
 }
 
+// helloPubSub consumes a CloudEvent message and extracts the Pub/Sub message.
+func helloPubSub(ctx context.Context, e event.Event) error {
+	var msg MessagePublishedData
+	if err := e.DataAs(&msg); err != nil {
+		return fmt.Errorf("event.DataAs: %v", err)
+	}
+
+	name := string(msg.Message.Data) // Automatically decoded from base64.
+	if name == "" {
+		name = "World"
+	}
+	log.Printf("Hello, %s!", name)
+	return nil
+}
 func sendDiscord(ctx context.Context, e event.Event) error {
 	var msg MessagePublishedData
 	if err := e.DataAs(&msg); err != nil {
